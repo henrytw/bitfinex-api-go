@@ -181,3 +181,20 @@ func (s *MarginFundingService) UnusedTakenFundings() ([]ActiveFunding, error) {
 	}
 	return v, nil
 }
+
+func (s *MarginFundingService) CloseFunding(fundingId int64) (ActiveFunding, error) {
+	payload := map[string]interface{}{"swap_id": fundingId}
+	req, err := s.client.newAuthenticatedRequest("POST", "funding/close", payload)
+
+	if err != nil {
+		return ActiveFunding{}, err
+	}
+
+	var v ActiveFunding
+	_, err = s.client.do(req, &v)
+
+	if err != nil {
+		return ActiveFunding{}, err
+	}
+	return v, nil
+}
