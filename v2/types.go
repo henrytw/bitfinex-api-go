@@ -1318,6 +1318,7 @@ type Ticker struct {
 	Volume          float64
 	High            float64
 	Low             float64
+	FRR             float64
 }
 
 type TickerUpdate Ticker
@@ -1348,6 +1349,7 @@ func NewTickerFromRaw(symbol string, raw []interface{}) (t *Ticker, err error) {
 	if len(raw) == 16 {
 		t = &Ticker{
 			Symbol:          symbol,
+			FRR:             f64ValOrZero(raw[0]),
 			Bid:             f64ValOrZero(raw[1]),
 			BidSize:         f64ValOrZero(raw[2]),
 			Ask:             f64ValOrZero(raw[4]),
@@ -1365,6 +1367,7 @@ func NewTickerFromRaw(symbol string, raw []interface{}) (t *Ticker, err error) {
 	// all other tickers
 	t = &Ticker{
 		Symbol:          symbol,
+		FRR:             0,
 		Bid:             f64ValOrZero(raw[0]),
 		BidSize:         f64ValOrZero(raw[1]),
 		Ask:             f64ValOrZero(raw[2]),
