@@ -105,7 +105,7 @@ type ActiveOffer struct {
 
 func (s *MarginFundingService) Credits() ([]ActiveOffer, error) {
 
-	req, err := s.client.newAuthenticatedRequest("POST", "credits", nil)
+	req, err := s.client.newAuthenticatedRequest("GET", "credits", nil)
 
 	if err != nil {
 		return nil, err
@@ -122,13 +122,58 @@ func (s *MarginFundingService) Credits() ([]ActiveOffer, error) {
 
 func (s *MarginFundingService) Offers() ([]ActiveOffer, error) {
 
-	req, err := s.client.newAuthenticatedRequest("POST", "offers", nil)
+	req, err := s.client.newAuthenticatedRequest("GET", "offers", nil)
 
 	if err != nil {
 		return nil, err
 	}
 
 	var v []ActiveOffer
+	_, err = s.client.do(req, &v)
+
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
+}
+
+type ActiveFunding struct {
+	ID         int64
+	PositionID int64
+	Currency   string
+	Rate       string
+	Period     int
+	Amount     string
+	Timestamp  string
+	AutoClose  bool `json:"auto_close"`
+}
+
+func (s *MarginFundingService) TakenFundings() ([]ActiveFunding, error) {
+
+	req, err := s.client.newAuthenticatedRequest("GET", "taken_funds", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var v []ActiveFunding
+	_, err = s.client.do(req, &v)
+
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
+}
+
+func (s *MarginFundingService) UnusedTakenFundings() ([]ActiveFunding, error) {
+
+	req, err := s.client.newAuthenticatedRequest("GET", "unused_taken_funds", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var v []ActiveFunding
 	_, err = s.client.do(req, &v)
 
 	if err != nil {
