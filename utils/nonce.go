@@ -2,6 +2,7 @@ package utils
 
 import (
 	"strconv"
+	"sync/atomic"
 	"time"
 )
 
@@ -21,12 +22,12 @@ type EpochNonceGenerator struct {
 // key and as such needs to be synchronised with other instances using the same
 // key in order to avoid race conditions.
 func (u *EpochNonceGenerator) GetNonce() string {
-	return strconv.FormatUint(uint64(time.Now().UnixNano())/1000000, 10)
+	return strconv.FormatUint(atomic.AddUint64(&u.nonce, 1), 10)
 }
 
 func NewEpochNonceGenerator() *EpochNonceGenerator {
 	return &EpochNonceGenerator{
-		nonce: uint64(time.Now().UnixNano()) / 1000000,
+		nonce: uint64(time.Now().Unix()) * 1000,
 	}
 }
 
@@ -44,5 +45,5 @@ func init() {
 // key and as such needs to be synchronised with other instances using the same
 // key in order to avoid race conditions.
 func GetNonce() string {
-	return strconv.FormatUint(uint64(time.Now().UnixNano())/1000000, 10)
+	return strconv.FormatUint(atomic.AddUint64(&nonce, 1), 10)
 }
