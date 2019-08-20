@@ -63,7 +63,13 @@ func (c *Client) handleChecksumChannel(chanId int64, checksum int) error {
 	symbol := sub.Request.Symbol
 	// force to signed integer
 	bChecksum := uint32(checksum)
-	if orderbook, ok := c.orderbooks[symbol]; ok {
+	var orderbook *Orderbook
+	c.mtx.Lock()
+	if ob, ok := c.orderbooks[symbol]; ok {
+		orderbook = ob
+	}
+	c.mtx.Unlock()
+	if orderbook != nil {
 		oChecksum := orderbook.Checksum()
 		// compare bitfinex checksum with local checksum
 		if bChecksum == oChecksum {
@@ -100,7 +106,10 @@ func (c *Client) handlePublicChannel(chanID int64, channel, objType string, data
 			if _, ok := data[0].([]interface{}); ok {
 				interfaceArray := bitfinex.ToInterfaceArray(data)
 				// snapshot item
+				c.mtx.Lock()
+				// lock mutex since its mutates client struct
 				msg, err := factory.BuildSnapshot(chanID, interfaceArray, raw_msg)
+				c.mtx.Unlock()
 				if err != nil {
 					return err
 				}
