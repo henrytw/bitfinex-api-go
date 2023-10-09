@@ -1263,6 +1263,7 @@ func NewNotificationFromRaw(raw []interface{}) (o *Notification, err error) {
 		Text:   sValOrEmpty(raw[7]),
 	}
 
+	fmt.Println("type: %s", o.Type)
 	// raw[4] = notify info
 	var nraw []interface{}
 	if raw[4] != nil {
